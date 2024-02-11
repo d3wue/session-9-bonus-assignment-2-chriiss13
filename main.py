@@ -31,11 +31,17 @@ def get_team_info(team_name, team_id):
     html = get_html(url)
     if html:
         soup = BeautifulSoup(html, "html.parser")
-        stadium_tag = soup.find("th", string="Venue:")
-        stadium = stadium_tag.find_next("td").text.strip() if stadium_tag else "Information not available"
-        coach_tag = soup.find("th", string="Manager:")
-        coach = coach_tag.find_next("td").text.strip() if coach_tag else "Information not available"
-        value = soup.find("p", class_="data-header__last-update")
+
+        stadium_tag = soup.find("a", {"href": f"/{team_name}/stadion/verein/{team_id}"})
+        stadium = stadium_tag.get_text() if stadium_tag else "Information not available"
+
+        trainer = {"class": "name svelte-1vf4nm9"}
+        coach_tag = soup.find("div", trainer)
+        coach = coach_tag.find_next("a").text.strip() if coach_tag else "Information not available"
+
+        value_tag = soup.find("a", class_ = "data-header__market-value-wrapper")
+        value = value_tag.find_next("#text").get_text() if value_tag else "Information not available"
+
         print()
         print(f"Team: {team_name}")
         print(f"Stadium: {stadium}")
